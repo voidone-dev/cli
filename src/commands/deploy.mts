@@ -1,6 +1,7 @@
 import { ArgsDef, CommandContext, defineCommand } from "citty";
 import { consola } from "consola";
 import { initApp } from "../lib/account.mjs";
+import { createConfigFile, getConfig, getState } from "../lib/state.mjs";
 
 export default defineCommand({
     meta: {
@@ -8,11 +9,9 @@ export default defineCommand({
       description: "Deploy your app to VoidOne",
     },
     async run({ args }) {
-      try {
-        consola.info(`Deploying!`);
-      } catch (e:any) {
-        if(e.message === "NO STATE"){
-           const reply = await consola.prompt(
+      const state = getState();
+      if(!state.session_token || !state.app_id){
+          const reply = await consola.prompt(
             `No VoidOne app found. Would you like to initialize/link an app in this directory?`,
             {
               type: "confirm",
@@ -22,9 +21,15 @@ export default defineCommand({
           await initApp();
           this.run!({ args } as CommandContext<ArgsDef>);
           return;
-        }else{
-          throw e;
-        }
       }
+
+      const config = getConfig();
+      if(!config.deployFolder){
+        await createConfigFile();
+        this.run!({ args } as CommandContext<ArgsDef>);
+        return;
+      }
+
+      consola.info(`Deploying!`);
     },
 });

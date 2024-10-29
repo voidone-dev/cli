@@ -1,52 +1,59 @@
-import { readFileSync, writeFileSync, existsSync, mkdirSync, appendFileSync } from "fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync, appendFileSync, rmSync } from "fs";
 import { consola } from "consola";
 
-interface State {
+export interface State {
     session_token: string;
     app_id: string;
 }
 
 const HOME_DIR = process.env.VOIDONE_HOME || ".voidone";
 
-let stateCache = null as State | null;
+let stateCache = null as Partial<State> | null;
 
-export const getState = () => {
+export const getState = ():Partial<State> => {
     try{
         if(stateCache) return stateCache;
         const state = JSON.parse(readFileSync(`./${HOME_DIR}/state.json`, "utf-8"));
-        if(!state.session_token || !state.app_id){
+        if(!state.session_token && !state.app_id){
             throw new Error("Invalid state file. Please run `voidone reset` to reset your CLI state.");
         }
+        stateCache = state;
         return state;
     }catch(e:any){
         if(e.code === "ENOENT"){
-            throw new Error("NO STATE")
+            stateCache = {}
+            return {}
         }
         throw e;
     }
 }
 
-export const setState = (merge: Partial<State>) => {
+export const setState = (merge: Partial<State>,force?:boolean) => {
     let state = {
         session_token: "",
         app_id: "",
-    } as State;
+    } as Partial<State>;
 
     try{
         state = getState();
     }catch(e:any){}
 
-    stateCache = {
+    stateCache = (force) ? merge : {
         ...state,
-        ...merge,
-    };
+        ...merge
+    } as Partial<State>;
+
     if(!existsSync(`./${HOME_DIR}`)){
         mkdirSync(`./${HOME_DIR}`);
         //Modify gitignore if it exists
-        if(existsSync(`.gitignore`)){
-            appendFileSync(`.gitignore`, "\n# VoidOne CLI\n.voidone\n");
+        if(existsSync(`./.gitignore`)){
+            const gitignore = readFileSync(`./.gitignore`, "utf-8");
+            if(!gitignore.includes("# VoidOne CLI")){
+                appendFileSync(`../gitignore`, "\n# VoidOne CLI\n.voidone\n");
+            }
         }
     }
+
     writeFileSync(`./${HOME_DIR}/state.json`, JSON.stringify(stateCache));
 }
 
@@ -75,4 +82,25 @@ export const createConfigFile = async () => {
     writeFileSync(`./voidone.json`, JSON.stringify(config, null, 2));
 }
 
+export const getConfig = ():Partial<Config> => {
+    try{
+        return JSON.parse(readFileSync(`./voidone.json`, "utf-8"));
+    }catch(e:any){
+        if(e.code === "ENOENT"){
+            return {};
+        }
+        throw e;
+    }
+}
+
+export const clearState = (type?:keyof State) => {
+    getState();
+    if(!stateCache) return;
+    if(!type){
+        rmSync(`./${HOME_DIR}`, { recursive: true, force: true });
+    }else{
+        delete stateCache[type];
+        setState(stateCache,true);
+    }
+}
         

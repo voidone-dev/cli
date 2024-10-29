@@ -1,11 +1,15 @@
 import { defineCommand, runMain } from "citty";
 
-import auth from "./commands/auth.mjs";
+import reset from "./commands/reset.mjs";
 import deploy from "./commands/deploy.mjs";
+import login from "./commands/login.mjs";
+import link from "./commands/link.mjs";
 
 const subCommands = {
-    auth,
     deploy,
+    login,
+    link,
+    reset,
 }
 
 const main = defineCommand({

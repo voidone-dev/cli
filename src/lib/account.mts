@@ -1,7 +1,7 @@
 import { exec } from "child_process";
 import { consola } from "consola";
 import { getRandomPort } from "get-port-please";
-import { createConfigFile, getState, setState } from "./state.mjs";
+import { getState, setState } from "./state.mjs";
 import { listenForAuth, postAPI } from "./api.mjs";
 
 export const login = async() => {
@@ -85,5 +85,4 @@ export const initApp = async() => {
     consola.info("To begin, please login to your VoidOne account.");
     await login();
     await link();
-    await createConfigFile();
 }
