@@ -15,7 +15,7 @@ const subCommands = {
 const main = defineCommand({
   meta: {
     name: "voidone",
-    version: "0.0.3",
+    version: "1.0.0",
     description: "The offical command line interface for deploying and managing VoidOne apps.",
   },
   subCommands

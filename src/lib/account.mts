@@ -14,6 +14,7 @@ export const login = async() => {
     setState({
         session_token: code,
     })
+    return code;
 }
 
 export const link = async() =>{

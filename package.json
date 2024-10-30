@@ -1,6 +1,6 @@
 {
   "name": "voidone",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "description": "VoidOne Command Line Interface",
   "bin": "./dist/index.mjs",
   "scripts": {
@@ -22,9 +22,11 @@
   "homepage": "https://github.com/voidone-dev/cli#readme",
   "dependencies": {
     "citty": "^0.1.6",
-    "get-port-please": "^3.1.2"
+    "get-port-please": "^3.1.2",
+    "mime-types": "^2.1.35"
   },
   "devDependencies": {
+    "@types/mime-types": "^2.1.4",
     "@types/node": "^22.8.1",
     "typescript": "^5.6.3"
   },

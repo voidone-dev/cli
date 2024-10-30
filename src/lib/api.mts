@@ -1,6 +1,7 @@
 import { createServer } from "http"
 import { consola } from "consola";
 import { login } from "./account.mjs";
+import { setState } from "./state.mjs";
 
 export async function postAPI<T>(route:string,body:any,headers?:Record<string,string>,skipJSON?:boolean){
     const res = await fetch(`https://voidone.dev/api${route}`,{
@@ -18,6 +19,9 @@ export async function postAPI<T>(route:string,body:any,headers?:Record<string,st
         if(json.error.includes("expire")){
             consola.error("Your session has expired. Please login again.");
             const code = await login();
+            setState({
+                session_token: code,
+            })
             return await postAPI(route,body,{
                 ...headers,
                 "Authorization": `Bearer ${code}`
