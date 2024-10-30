@@ -1,6 +1,6 @@
 {
   "name": "voidone",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "VoidOne Command Line Interface",
   "bin": "./dist/index.mjs",
   "scripts": {

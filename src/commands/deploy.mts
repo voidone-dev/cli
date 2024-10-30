@@ -30,6 +30,6 @@ export default defineCommand({
         return;
       }
 
-      consola.info(`Deploying!`);
+      consola.info(`Deploying is WIP!`);
     },
 });
