@@ -17,8 +17,11 @@ export async function postAPI<T>(route:string,body:any,headers?:Record<string,st
     if(json.error){
         if(json.error.includes("expire")){
             consola.error("Your session has expired. Please login again.");
-            await login();
-            await postAPI(route,body,headers,skipJSON);
+            const code = await login();
+            return await postAPI(route,body,{
+                ...headers,
+                "Authorization": `Bearer ${code}`
+            },skipJSON);
         }else{
             throw new Error(json.error)
         }
